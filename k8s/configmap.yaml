@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: data-daemon-config
+  namespace: beeable
+data:
+  PLATFORM_API_URL: "https://dev-api.beeable.dev"
+  PORT: "3000"

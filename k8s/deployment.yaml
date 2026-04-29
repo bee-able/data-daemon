@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: data-daemon
+  namespace: beeable
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: data-daemon
+  template:
+    metadata:
+      labels:
+        app: data-daemon
+    spec:
+      imagePullSecrets:
+        - name: ghcr-pull-bee-able
+      containers:
+        - name: data-daemon
+          image: ghcr.io/bee-able/data-daemon:latest
+          ports:
+            - containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: data-daemon-config
+            - secretRef:
+                name: data-daemon-secrets
+          env:
+            # Shared across platform + every daemon in the execution-token
+            # chain. Source of truth is beeable-api-secrets; daemons pull
+            # only the one key they need rather than envFrom the whole
+            # platform secret. See docs/app-contract.md#execution-tokens.
+            - name: EXECUTION_TOKEN_SIGNING_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: beeable-api-secrets
+                  key: EXECUTION_TOKEN_SIGNING_KEY
+          readinessProbe:
+            httpGet:
+              path: /_platform/apps
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "50m"
+            limits:
+              memory: "256Mi"
+              cpu: "300m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: data-daemon
+  namespace: beeable
+spec:
+  selector:
+    app: data-daemon
+  ports:
+    - port: 3000
+      targetPort: 3000

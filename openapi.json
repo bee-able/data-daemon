@@ -1,0 +1,857 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/collections": {
+      "post": {
+        "description": "Creates a collection in the caller's pinned namespace (the `x-beeable-namespace` header, set by the SDK). The namespace must already exist — call `POST /api/namespaces/ensure` on the platform first.",
+        "operationId": "createCollection",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "schemaVersion": {
+                    "type": "integer",
+                    "default": 1
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "namespaceId",
+                    "name",
+                    "schemaVersion",
+                    "metadata",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "namespaceId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "schemaVersion": {
+                      "type": "integer"
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "additionalProperties": true
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Create a named collection",
+        "tags": [
+          "collections"
+        ]
+      },
+      "get": {
+        "description": "When `x-beeable-namespace` is pinned, lists collections in that one namespace. Otherwise lists across every namespace the caller can access.",
+        "operationId": "listCollections",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Array of collections",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "namespaceId",
+                      "name",
+                      "schemaVersion",
+                      "metadata",
+                      "createdAt",
+                      "updatedAt"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "namespaceId": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "schemaVersion": {
+                        "type": "integer"
+                      },
+                      "metadata": {
+                        "type": "object",
+                        "additionalProperties": true
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "List collections in the caller's namespaces",
+        "tags": [
+          "collections"
+        ]
+      }
+    },
+    "/api/collections/ensure": {
+      "post": {
+        "description": "Returns the existing collection when one exists with the same name in the pinned namespace; otherwise creates it. `created` indicates which branch ran.",
+        "operationId": "ensureCollection",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "name"
+                ],
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "schemaVersion": {
+                    "type": "integer",
+                    "default": 1
+                  },
+                  "metadata": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "collection",
+                    "created"
+                  ],
+                  "properties": {
+                    "collection": {
+                      "type": "object",
+                      "required": [
+                        "id",
+                        "namespaceId",
+                        "name",
+                        "schemaVersion",
+                        "metadata",
+                        "createdAt",
+                        "updatedAt"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "namespaceId": {
+                          "type": "string",
+                          "format": "uuid"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "schemaVersion": {
+                          "type": "integer"
+                        },
+                        "metadata": {
+                          "type": "object",
+                          "additionalProperties": true
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "updatedAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      }
+                    },
+                    "created": {
+                      "type": "boolean"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Idempotently create-or-fetch a collection in the pinned namespace",
+        "tags": [
+          "collections"
+        ]
+      }
+    },
+    "/api/collections/{name}": {
+      "get": {
+        "operationId": "getCollection",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Collection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "namespaceId",
+                    "name",
+                    "schemaVersion",
+                    "metadata",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "namespaceId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "schemaVersion": {
+                      "type": "integer"
+                    },
+                    "metadata": {
+                      "type": "object",
+                      "additionalProperties": true
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get a single collection by name",
+        "tags": [
+          "collections"
+        ]
+      },
+      "delete": {
+        "operationId": "deleteCollection",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          }
+        },
+        "summary": "Delete a collection and every document inside it",
+        "tags": [
+          "collections"
+        ]
+      }
+    },
+    "/api/collections/{name}/docs": {
+      "post": {
+        "description": "Writes to the collection in the caller's pinned namespace (`x-beeable-namespace`). The collection must already exist there — call `ensureCollection(name)` on first use.",
+        "operationId": "insertDoc",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "The JSON document to store. Must be a plain object."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "collectionId",
+                    "data",
+                    "schemaVersion",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "collectionId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    },
+                    "schemaVersion": {
+                      "type": "integer"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Insert a JSON document into a collection",
+        "tags": [
+          "documents"
+        ]
+      },
+      "get": {
+        "description": "Optional `where` is a JSON-encoded equality predicate (JSONB `@>` containment). When `x-beeable-namespace` is pinned, only that namespace is consulted; otherwise the full accessible set.",
+        "operationId": "listDocs",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "where",
+            "required": false,
+            "in": "query",
+            "description": "JSON-encoded equality predicate object",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "offset",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Array of documents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "id",
+                      "collectionId",
+                      "data",
+                      "schemaVersion",
+                      "createdAt",
+                      "updatedAt"
+                    ],
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "collectionId": {
+                        "type": "string",
+                        "format": "uuid"
+                      },
+                      "data": {
+                        "type": "object",
+                        "additionalProperties": true
+                      },
+                      "schemaVersion": {
+                        "type": "integer"
+                      },
+                      "createdAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      },
+                      "updatedAt": {
+                        "type": "string",
+                        "format": "date-time"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "List documents in a collection",
+        "tags": [
+          "documents"
+        ]
+      }
+    },
+    "/api/collections/{name}/docs/count": {
+      "get": {
+        "operationId": "countDocs",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "where",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "count"
+                  ],
+                  "properties": {
+                    "count": {
+                      "type": "integer"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Count documents matching an optional filter",
+        "tags": [
+          "documents"
+        ]
+      }
+    },
+    "/api/collections/{name}/docs/{id}": {
+      "get": {
+        "operationId": "getDoc",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Document",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "collectionId",
+                    "data",
+                    "schemaVersion",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "collectionId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    },
+                    "schemaVersion": {
+                      "type": "integer"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get one document by id",
+        "tags": [
+          "documents"
+        ]
+      },
+      "put": {
+        "operationId": "replaceDoc",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "data"
+                ],
+                "properties": {
+                  "data": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "The JSON document to store. Must be a plain object."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated document",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "collectionId",
+                    "data",
+                    "schemaVersion",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "collectionId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    },
+                    "schemaVersion": {
+                      "type": "integer"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Replace a document entirely",
+        "tags": [
+          "documents"
+        ]
+      },
+      "patch": {
+        "description": "Right-hand keys override; nested objects are replaced, not deep-merged.",
+        "operationId": "patchDoc",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "changes"
+                ],
+                "properties": {
+                  "changes": {
+                    "type": "object",
+                    "additionalProperties": true,
+                    "description": "Shallow-merge changes: right-hand top-level keys override. Nested objects are replaced, not deep-merged."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Updated document",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "id",
+                    "collectionId",
+                    "data",
+                    "schemaVersion",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "collectionId": {
+                      "type": "string",
+                      "format": "uuid"
+                    },
+                    "data": {
+                      "type": "object",
+                      "additionalProperties": true
+                    },
+                    "schemaVersion": {
+                      "type": "integer"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Shallow-merge top-level keys into a document",
+        "tags": [
+          "documents"
+        ]
+      },
+      "delete": {
+        "operationId": "deleteDoc",
+        "parameters": [
+          {
+            "name": "name",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Deleted"
+          }
+        },
+        "summary": "Delete a document",
+        "tags": [
+          "documents"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Beeable Data Daemon",
+    "description": "Generic named JSON-document collections backed by Postgres JSONB",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "schemas": {}
+  }
+}

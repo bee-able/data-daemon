@@ -1,0 +1,28 @@
+{
+  "name": "data-daemon",
+  "displayName": "Data",
+  "hasApi": true,
+  "hasUi": false,
+  "config": [
+    {
+      "key": "PORT",
+      "description": "TCP port the daemon listens on",
+      "default": "3000"
+    },
+    {
+      "key": "DATABASE_URL",
+      "description": "Postgres connection string (CloudNativePG shared cluster)",
+      "defaultFrom": "platform"
+    },
+    {
+      "key": "PLATFORM_API_URL",
+      "description": "Platform API base URL for auth + namespace checks",
+      "defaultFrom": "platform"
+    },
+    {
+      "key": "EXECUTION_TOKEN_SIGNING_KEY",
+      "description": "HS256 signing key for execution tokens",
+      "defaultFrom": "platform"
+    }
+  ]
+}
